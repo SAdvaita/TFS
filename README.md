@@ -1,89 +1,155 @@
 # TRUE FIRE SOLUTION (TFS)
-# Business Management & Invoicing Application (Web + Android Mobile)
+
+<div align="center">
+
+![TFS](https://img.shields.io/badge/TFS-Business%20Management-ff3b30?style=for-the-badge)
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748?logo=prisma&logoColor=white)
+![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite&logoColor=white)
+
+</div>
+
+Business management and invoicing platform for TRUE FIRE SOLUTION with web and Android support.
 
 ## Overview
-A comprehensive business management application for **TRUE FIRE SOLUTION (TFS)** to centralize customer records, manage product descriptions, automate consecutive bill numbers, issue Delivery Challans, store customer fire safety licenses, and generate print-ready invoices and quotations that **pixel-accurately match the official TFS reference document format**.
+This project centralizes customer records, product catalog management, license tracking, delivery challans, quotations, audit logs, and invoice generation in a format that closely matches the official TFS document layout.
 
----
+## Features
+- Exact invoice and quotation document generation with print-ready layout
+- Customer master management and invoice history
+- Product catalog with refill and new pricing
+- License vault with expiry tracking
+- Delivery challan and fire drill report modules
+- Excel export/import support
+- Immutable audit history for operational tracking
+- React web app and React Native mobile app connected to the same backend
 
-## Key Features & Modules
+## Tech Stack
+- Frontend: React + Vite + Tailwind CSS
+- Mobile: Expo / React Native
+- Backend: Node.js + Express + TypeScript
+- Database: SQLite via Prisma ORM
 
-1. **Exact TFS Invoice Reproduction**:
-   - Matches official TFS layout: TFS Red & Gold Badge Logo, Customer details grid, top-right `INVOICE` box with `BILL NO` & `DATE`, 7-column Product Table (`SI. No.`, `Product Description`, `Capacity`, `Refilling Price`, `New Price`, `Qty.`, `Total Rs.`).
-   - Dynamic dashes (`---------`) automatically inserted into the opposite price column depending on whether "Refill" or "New" is chosen.
-   - Auto arithmetic, Subtotal, Delivery/Installation/Other charges, optional GST (hidden when OFF), and Amount in Words in Indian English format (e.g. `TOTAL ( NINE HUNDRED ONLY )`).
-   - Terms & Conditions and Bank Details in red (`State Bank of India, Alapakkam Branch`), `SURESH S` signature, and official footer.
+## Prerequisites
+Before you begin, make sure you have:
+- Node.js 18+ or 20+
+- npm
+- Git
+- Android Studio + emulator for mobile testing (optional)
 
-2. **Quotations Module (PROFORMA)**:
-   - Identical master document format, but heading dynamically changes to **`PROFORMA`** and the Bill No area remains blank.
+## Quick Start
 
-3. **Split Data Entry & Live A4 Preview**:
-   - When creating an invoice, entry controls are on the left and a live A4 preview updates in real-time on the right.
+### 1) Clone the repository
+```bash
+git clone https://github.com/SAdvaita/TFS.git
+cd TFS
+```
 
-4. **Historical Invoice Immutability**:
-   - Finalized invoices store frozen snapshots of customer, company, bank, and product data. Updating master records never modifies past invoices.
+### 2) Install dependencies
+```bash
+cd backend
+npm install
 
-5. **Invoice Cloning**:
-   - 1-click cloning of prior customer invoices for annual refilling repeat billing.
+cd ../web
+npm install
 
-6. **Customer Master & Yearly History**:
-   - Customer profile with duplicate detection and an invoice history hierarchy (`Year` -> `Month` -> `Invoices`).
+cd ../mobile
+npm install
+```
 
-7. **Product Description Master**:
-   - Pre-saved reusable technical fire extinguisher chemical descriptions with default refill and new pricing.
+### 3) Configure environment variables
+Copy the example environment files before starting the app:
 
-8. **License Vault**:
-   - Separate customer license section supporting multi-file uploads (PDF, DOCX, JPG, PNG) with dashboard expiry alerts (<7 days, <30 days, <90 days, expired).
+```bash
+cd backend
+copy .env.example .env
 
-9. **DC (Delivery Challan) Module**:
-   - Dispatch slip generator with configurable items and customer fields.
+cd ../web
+copy .env.example .env
+```
 
-10. **Fire Drill Report Module**:
-    - Pre-built module to record mock evacuation drills, participant counts, observations, and safety recommendations.
+Update the values in each `.env` file as needed.
 
-11. **Excel Export & Migration Import**:
-    - 5-Sheet Excel workbook export (`INVOICE SUMMARY`, `INVOICE ITEMS`, `CUSTOMERS`, `LICENSES`, `AUDIT LOG`).
-    - Excel import wizard to migrate legacy `.xlsx` files.
+Example backend values:
+```env
+DATABASE_URL="file:./dev.db"
+PORT=5000
+JWT_SECRET="change_this_to_a_secure_secret"
+```
 
-12. **Permanent Audit Log**:
-    - Immutable audit trail recording every login, invoice creation, finalization, clone, and export.
+Example web values:
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 
-13. **TFS Android App**:
-    - React Native / Expo app connecting to the same centralized backend database with touch-optimized invoice creation and PDF sharing.
+### 4) Initialize the database
+```bash
+cd backend
+npx prisma generate
+npx prisma db push
+npm run seed
+```
 
----
-
-## Quick Start (How to Run)
-
-### 1. Start Both Backend & Web App (One-Click)
-Double-click **`start.bat`** in the project root directory.
-
-Or run manually:
-
-#### Backend API (Port 5000):
+### 5) Start the application
+#### Backend
 ```bash
 cd backend
 npm run dev
 ```
 
-#### Web Frontend (Port 5173):
+#### Web app
 ```bash
 cd web
 npm run dev
 ```
-Open **`http://localhost:5173`** in your browser.
 
----
+Open http://localhost:5173 in the browser.
 
-## Default Login Credentials
-- **Email / Username**: `admin@truefiresolution.com` (or `admin`)
-- **Password**: `admin123`
-
----
-
-## Running the Android Mobile App
+#### Mobile app
 ```bash
 cd mobile
 npm start
 ```
-- Press `a` in the terminal to open on Android Emulator, or scan the QR code with **Expo Go** on your Android phone.
+
+Then run the app in an emulator or Expo Go.
+
+## Default Login
+- Email: admin@truefiresolution.com
+- Password: admin123
+
+## One-click startup
+The project root includes a Windows launcher:
+
+```bash
+start.bat
+```
+
+## Project Structure
+```text
+TFS/
+├─ backend/
+│  ├─ prisma/
+│  ├─ src/
+│  ├─ .env.example
+│  └─ package.json
+├─ web/
+│  ├─ src/
+│  ├─ .env.example
+│  └─ package.json
+├─ mobile/
+│  ├─ src/
+│  └─ package.json
+├─ assets/
+├─ README.md
+├─ start.bat
+└─ .gitignore
+```
+
+## Notes
+- The backend serves uploaded files from the `uploads` directory and assets from the `assets` folder.
+- `mobile/src/api/client.ts` defaults to the Android emulator endpoint `http://10.0.2.2:5000/api`.
+- For real device testing, update the API URL in the mobile app settings or client configuration.
+
+## License
+This project is intended for the TRUE FIRE SOLUTION business workflow and internal operational use.
