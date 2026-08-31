@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "TFS True Fire Solution",
+    "slug": "tfs-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#D32F2F"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#D32F2F"
+      },
+      "package": "com.truefiresolution.tfs"
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    }
+  }
+}

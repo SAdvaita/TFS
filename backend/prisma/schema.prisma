@@ -1,0 +1,239 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("TFS Admin")
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CompanySettings {
+  id               String   @id @default("default_settings")
+  companyName      String   @default("TRUE FIRE SOLUTION")
+  tagline          String   @default("FIRE & SAFETY")
+  logoUrl          String?
+  street           String   @default("No.6/166, GANESH AVENUE 8TH STREET")
+  area             String   @default("SAKTHI NAGAR, PORUR")
+  city             String   @default("CHENNAI")
+  pincode          String   @default("600116")
+  state            String   @default("TAMILNADU")
+  country          String   @default("INDIA")
+  mobile           String   @default("+91 94448 99628")
+  email            String   @default("truefiresolution2025@gmail.com")
+  signatureName    String   @default("SURESH S")
+
+  // Bank Details
+  bankName         String   @default("State Bank Of India")
+  branch           String   @default("Alapakkam Branch, Valasaravakkam, Chennai – 600087")
+  accountName      String   @default("True Fire Solution")
+  accountNumber    String   @default("43797963102")
+  ifsc             String   @default("SBIN0016332")
+
+  // Invoice Config
+  invoiceStartSeq  Int      @default(1)
+  invoicePrefix    String   @default("")
+  dateFormat       String   @default("DD.MM.YYYY")
+  termsConditions  String   @default("1. Payments 100% in Advance\n2. Delivery against your confirmation\n3. Cheque in favor of \"TRUE FIRE SOLUTION\"\n4. Warranty as per norms*")
+  taxEnabled       Boolean  @default(false)
+  taxRate          Float    @default(18.0)
+
+  // DC template configuration (JSON)
+  dcTemplateConfig String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Customer {
+  id             String     @id @default(uuid())
+  customerCode   String?
+  name           String
+  street         String?
+  area           String?
+  city           String?
+  pincode        String?
+  phone          String?
+  alternatePhone String?
+  contactPerson  String?
+  email          String?
+  notes          String?
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  invoices       Invoice[]
+  licenses       License[]
+  dcDocuments    DcDocument[]
+  fireDrillReports FireDrillReport[]
+}
+
+model Product {
+  id                    String   @id @default(uuid())
+  name                  String
+  capacity              String
+  description           String
+  defaultRefillingPrice Float?
+  defaultNewPrice       Float?
+  isActive              Boolean  @default(true)
+  notes                 String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model InvoiceSequence {
+  id           String   @id @default("invoice_sequence")
+  sequenceName String   @default("INVOICE")
+  lastNumber   Int      @default(0)
+  updatedAt    DateTime @updatedAt
+}
+
+model DcSequence {
+  id           String   @id @default("dc_sequence")
+  sequenceName String   @default("DC")
+  lastNumber   Int      @default(0)
+  updatedAt    DateTime @updatedAt
+}
+
+model Invoice {
+  id                   String        @id @default(uuid())
+  docType              String        @default("INVOICE") // "INVOICE" or "QUOTATION"
+  billNo               String?
+  numericBillNo        Int?
+  date                 String        // Format: "DD.MM.YYYY" or ISO
+  rawDate              DateTime      @default(now())
+  status               String        @default("DRAFT") // "DRAFT", "FINAL", "CANCELLED"
+  
+  customerId           String?
+  customer             Customer?     @relation(fields: [customerId], references: [id])
+  
+  // Snapshots for Historical Immutability
+  customerSnapshot     String        // JSON: { name, street, area, city, phone, contactPerson, email, pincode }
+  companySnapshot      String        // JSON: { companyName, street, area, city, pincode, mobile, email, signatureName }
+  bankSnapshot         String        // JSON: { bankName, branch, accountName, accountNumber, ifsc }
+  termsSnapshot        String        // Text of terms and conditions
+  
+  // Additional Charges
+  deliveryCharges      Float         @default(0)
+  installationCharges  Float         @default(0)
+  otherCharges         Float         @default(0)
+  
+  // Calculations
+  subtotal             Float         @default(0)
+  taxEnabled           Boolean       @default(false)
+  taxRate              Float         @default(0)
+  taxAmount            Float         @default(0)
+  finalTotal           Float         @default(0)
+  amountInWords        String        @default("")
+  
+  notes                String?
+  pdfUrl               String?
+  docxUrl              String?
+
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  finalizedAt          DateTime?
+
+  items                InvoiceItem[]
+}
+
+model InvoiceItem {
+  id                 String   @id @default(uuid())
+  invoiceId          String
+  invoice            Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  slNo               Int
+  productId          String?
+  productName        String
+  productDescription String
+  capacity           String
+  priceType          String   @default("REFILL") // "REFILL" or "NEW"
+  refillingPrice     Float?
+  newPrice           Float?
+  quantity           Int      @default(1)
+  lineTotal          Float    @default(0)
+}
+
+model License {
+  id            String        @id @default(uuid())
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  licenseType   String
+  licenseNumber String
+  issueDate     String?
+  expiryDate    String
+  rawExpiryDate DateTime?
+  notes         String?
+  status        String        @default("ACTIVE") // "ACTIVE", "EXPIRING_SOON", "EXPIRED"
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  files         LicenseFile[]
+}
+
+model LicenseFile {
+  id           String   @id @default(uuid())
+  licenseId    String
+  license      License  @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  fileName     String
+  originalName String
+  fileUrl      String
+  fileType     String
+  fileSize     Int
+  uploadedAt   DateTime @default(now())
+}
+
+model DcDocument {
+  id                   String    @id @default(uuid())
+  dcNumber             String
+  numericDcNo          Int?
+  date                 String
+  rawDate              DateTime  @default(now())
+  customerId           String?
+  customer             Customer? @relation(fields: [customerId], references: [id])
+  customerSnapshot     String    // JSON
+  itemsSnapshot        String    // JSON array of items
+  notes                String?
+  status               String    @default("ISSUED")
+  templateConfig       String?   // JSON
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model FireDrillReport {
+  id                   String    @id @default(uuid())
+  reportNumber         String
+  date                 String
+  rawDate              DateTime  @default(now())
+  customerId           String?
+  customer             Customer? @relation(fields: [customerId], references: [id])
+  location             String
+  customerSnapshot     String    // JSON
+  participantsCount    Int?
+  observations         String?
+  recommendations      String?
+  status               String    @default("COMPLETED")
+  attachments          String?   // JSON array of file paths
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model AuditLog {
+  id               String   @id @default(uuid())
+  timestamp        DateTime @default(now())
+  userName         String   @default("TFS Admin")
+  action           String   // e.g. "INVOICE_CREATED", "CUSTOMER_UPDATED", "LICENSE_UPLOADED"
+  recordType       String   // e.g. "INVOICE", "CUSTOMER", "PRODUCT", "LICENSE", "SETTINGS"
+  recordId         String?
+  details          String?
+  previousValue    String?  // JSON
+  newValue         String?  // JSON
+}

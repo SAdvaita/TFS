@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-100 text-slate-900 antialiased font-sans;
+  }
+}
+
+/* Custom Print Rules for Pure A4 Invoice Print */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #tfs-invoice-printable,
+  #tfs-invoice-printable * {
+    visibility: visible;
+  }
+
+  #tfs-invoice-printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
