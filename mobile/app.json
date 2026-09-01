@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "TFS True Fire Solution",
-    "slug": "tfs-mobile",
+    "slug": "tf22026",
+    "owner": "tfs2026s-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,6 +24,15 @@
     },
     "web": {
       "favicon": "./assets/icon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c9701102-e638-495f-8639-a18501e774ad"
+      }
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-font"
+    ]
   }
 }

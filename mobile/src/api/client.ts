@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Default to local machine IP or custom server
-export const DEFAULT_API_URL = 'http://10.0.2.2:5000/api'; // Android Emulator alias for localhost:5000
+export const DEFAULT_API_URL = 'https://tfs-o6ye.onrender.com/'; // Android Emulator alias for localhost:5000
 
 let customApiUrl = DEFAULT_API_URL;
 
